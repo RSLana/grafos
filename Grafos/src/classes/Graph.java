@@ -39,7 +39,7 @@ public class Graph {
     public void setNodes (Node node){
         nodes.put(node.getId(), node);
     }
-    public void setEdge(Edge edge){
+    public void setEdges(Edge edge){
         edges.add(edge);
     }
     public Node getNode(String idNode){
