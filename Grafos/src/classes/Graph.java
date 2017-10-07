@@ -30,6 +30,14 @@ public class Graph {
         nodes = new HashMap<>();
         edges = new ArrayList<>();
     }
+    
+    public Graph(String id, String directed) {
+        this.id = id;
+        this.directed = directed;
+        nodes = new HashMap<>();
+        edges = new ArrayList<>();
+    }
+    
     public String getId(){
         return id;
     }

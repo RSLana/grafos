@@ -18,7 +18,7 @@ public class Node {
     }
 
     public Node(String idNode) {
-        
+        this.id = idNode;
     }
    
     public String getId() {
