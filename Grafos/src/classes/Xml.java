@@ -16,8 +16,9 @@ import java.util.Set;
  * @author ariel
  */
 public abstract class Xml {
-    public static void gerarXmlGrafo(Graph grafo) throws IOException{
-        FileWriter arquivo = new FileWriter("grafo.xml");
+    public static void gerarXmlGrafo(String nomeGrafo,Graph grafo) throws IOException{
+        
+        FileWriter arquivo = new FileWriter(nomeGrafo+".xml");
         PrintWriter gravarArquivo = new PrintWriter(arquivo);
 
         gravarArquivo.printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");

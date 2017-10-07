@@ -66,6 +66,16 @@ public class Main {
             System.out.println("--------------------------------------");
         }
         
+        System.out.print("Deseja gerar o XML do Grafo? SIM->[1] / NÃO->[0]: ");
+        int resposta = teclado.nextInt();
+        if(resposta==1){
+            System.out.print("Digite o nome do XML que será gerado: ");
+            String nome = teclado.next();
+            Xml.gerarXmlGrafo(nome,grafo);
+            System.out.println("XML GERADO COM SUCESSO!!");
+        }else{
+            System.out.println("TENHA UM BOM DIA!!!");
+        }
     }
 }
 
