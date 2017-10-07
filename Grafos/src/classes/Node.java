@@ -10,5 +10,18 @@ package classes;
  * @author rafael
  */
 public class Node {
-    
+    private String id;
+    private static int digito = 0;
+
+    public Node() {
+        this.id = "n"+(digito++);
+    }
+
+    public Node(String idNode) {
+        
+    }
+   
+    public String getId() {
+        return id;
+    }
 }
