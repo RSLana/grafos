@@ -40,11 +40,7 @@ public class Graph {
         nodes.put(node.getId(), node);
     }
     public void setEdge(Edge edge){
-        if (nodes.containsKey(edge.getSource().getId())&& nodes.containsKey(edge.getTarget().getId())){
-            edges.add(edge);
-        }else{
-            System.out.println("Este nó não existe");
-        }
+        edges.add(edge);
     }
     public Node getNode(String idNode){
         if (nodes.containsKey(idNode)){
