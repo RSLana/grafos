@@ -7,6 +7,7 @@ package classes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  *
@@ -294,5 +295,193 @@ public class Graph {
         }
         return true;
     }
+    
+    public void listaAdjacencias() {
+        HashMap<Node, ArrayList<Node>> vertices = new HashMap<>();
+        Node teste = new Node();
 
+        for (Node n1 : nodes.values()) {
+            ArrayList<Node> nodesAdjacentes = new ArrayList<>();
+            for (Node n2 : nodes.values()) {
+                if (verticeAdjacenteLista(n1.getId(), n2.getId())) {
+                    nodesAdjacentes.add(n2);
+                }
+            }
+            vertices.put(n1, nodesAdjacentes);
+        }
+        
+        Set<Node> keys = vertices.keySet();
+        
+        for (Node key : keys){  
+          System.out.print(key.getId()+" -> ");
+            for (int j = 0; j < vertices.get(key).size(); j++) {
+                
+                System.out.print(vertices.get(key).get(j).getId()+" ");
+            }
+            System.out.println();
+        }
+    }
+    
+    public boolean verticeAdjacenteLista(String source, String target) {
+        for (Edge edge : edges) {
+            if ((edge.getSource() == getNode(source) && edge.getTarget() == getNode(target))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void adicionaNode(Node node) {
+        setNodes(node);
+    }
+
+    public void adicionaEdge(Edge edge) {
+        setEdges(edge);
+    }
+
+    public void excluirNode(String idNode) {
+        for (int i = 0; i < edges.size(); i++) {
+            if (edges.get(i).getSource() == getNode(idNode) || edges.get(i).getTarget() == getNode(idNode)) {
+                edges.remove(i);
+            }
+        }
+        nodes.remove(idNode);
+    }
+
+    public void excluirEdge(int edgeId) {
+        for (int i = 0; i < edges.size(); i++) {
+            if (edges.get(i).getId() == edgeId) {
+                edges.remove(i);
+            }
+        }
+    }
+
+    public void matrizAdjacencias() {
+        int adjacencia[][] = new int[nodes.size()][nodes.size()];
+
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = 0; j < nodes.size(); j++) {
+                adjacencia[i][j] = 0;
+            }
+        }
+        int cont1 = 0, cont2 = 0;
+        for (Node n : nodes.values()) {
+            for (Node r : nodes.values()) {
+                if (verticeAdjacente(n.getId(), r.getId()) > 0) {
+                    adjacencia[cont1][cont2] = 1;
+                }
+                cont2++;
+            }
+            cont2 = 0;
+            cont1++;
+        }
+        
+        System.out.print("   ");
+        for (Node node: nodes.values()) {
+            System.out.print(node.getId()+" ");
+        }
+        System.out.println();
+        cont1 = 0;
+        for (Node node: nodes.values()) {
+            System.out.print(node.getId()+" ");
+            for (int j = 0; j < nodes.size(); j++) {
+                System.out.print(adjacencia[cont1][j]+"  ");
+            }
+            cont1++;
+            System.out.print("\n");
+        }
+
+    }
+
+    public void matrizIncidencia() {
+
+        int incidencia[][] = new int[nodes.size()][edges.size()];
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = 0; j < edges.size(); j++) {
+                incidencia[i][j] = 0;
+            }
+        }
+
+        int cont1 = 0, cont2 = 0;
+        for (Node n : nodes.values()) {
+            for (Edge edge : edges) {
+                if ((edge.getSource() == n) && (edge.getTarget() == n)) {
+                    incidencia[cont1][cont2] = 2;
+                } else if ((edge.getSource() == n) || (edge.getTarget() == n)) {
+                    incidencia[cont1][cont2] = 1;
+                }
+                cont2++;
+            }
+            cont2 = 0;
+            cont1++;
+        }
+
+        System.out.print("   ");
+        for (Edge edge: edges) {
+            System.out.print("a"+edge.getId()+" ");
+        }
+        System.out.println();
+        cont1 = 0;
+        for (Node node: nodes.values()) {
+            System.out.print(node.getId()+" ");
+            for (int j = 0; j < edges.size(); j++) {
+                System.out.print(incidencia[cont1][j]+"  ");
+            }
+            cont1++;
+            System.out.print("\n");
+        }
+    }
+
+    public void grafoBipartido() {
+        ArrayList<Node> nos = new ArrayList<>();
+        ArrayList<Edge> arestas = new ArrayList<>();
+
+        for (int i = 0; i < nodes.size(); i++) {
+            nos.add(nodes.get(i));
+        }
+        HashMap<Node, ArrayList<Node>> divisao = new HashMap<>();
+
+        for (Node m : nodes.values()) {
+            ArrayList<Node> nosAssociados = new ArrayList<>();
+            for (Node n : nodes.values()) {
+                if (verticeAdjacente(m.getId(), n.getId()) != 0) {
+                    nosAssociados.add(nodes.get(n.getId()));
+                }
+            }
+            divisao.put(nodes.get(m.getId()), nosAssociados);
+        }
+
+        ArrayList<Node> grupoA = new ArrayList<>();
+        ArrayList<Node> grupoB = new ArrayList<>();
+        ArrayList<Node> grupoC = new ArrayList<>();
+
+        for (Node n : nodes.values()) {
+
+            if (!(grupoA.contains(n) || grupoB.contains(n) || grupoC.contains(n))) {
+                grupoA.add(n);
+                for (int j = 0; j < divisao.get(n).size(); j++) {
+                    if (!grupoB.contains(divisao.get(n).get(j))) {
+                        if (grupoB.isEmpty()) {
+                            grupoB.add(divisao.get(n).get(j));
+                        }
+                        int num = grupoB.size();
+                        for (int k = 0; k < num; k++) {
+                            if (!divisao.get(grupoB.get(k)).contains(divisao.get(n).get(j))) {
+                                grupoB.add(divisao.get(n).get(j));
+                            } else {
+                                if (!grupoC.contains(divisao.get(n).get(j))) {
+                                    grupoC.add(divisao.get(n).get(j));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (grupoC.isEmpty()) {
+            System.out.println("É bipartido");
+        } else {
+            System.out.println("Não é bipartido");
+        }
+    }
 }
