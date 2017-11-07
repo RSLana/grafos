@@ -10,12 +10,32 @@ package classes;
  * @author rafael
  */
 public class Edge {
-    private Node source;
-    private Node target;
+    private int id;
+    private static int digito = 0;
+    private Node source = null;
+    private Node target = null;
+    private String rotulo = null;
+
+    public String getRotulo() {
+        return rotulo;
+    }
+
+    public void setRotulo(String rotulo) {
+        this.rotulo = rotulo;
+    }
 
     public Edge(Node source, Node target) {
         this.source = source;
         this.target = target;
+        this.id = digito++;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Node getSource() {
@@ -23,7 +43,7 @@ public class Edge {
     }
 
     public void setSource(Node source) {
-        
+
         this.source = source;
     }
 

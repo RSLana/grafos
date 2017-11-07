@@ -43,12 +43,25 @@ public abstract class Xml {
         Set<String> chaves = grafo.getNodes().keySet();
 
         for (String chave : chaves) {
-            gravarArquivo.printf("      <node id='" + grafo.getNodes().get(chave).getId() + "'/>\n");
+            if (grafo.getNodes().get(chave).getRotulo() != null) {
+                gravarArquivo.printf("      <node id='" + grafo.getNodes().get(chave).getId() + "'>\n");
+                gravarArquivo.printf("          <data key= 'd0'>" + grafo.getNodes().get(chave).getRotulo() + "</data>\n");
+                gravarArquivo.printf("      </node>\n");
+            } else {
+                gravarArquivo.printf("      <node id='" + grafo.getNodes().get(chave).getId() + "'/>\n");
+            }
+
         }
 
         ArrayList<Edge> edges = grafo.getEdges();
         for (Edge edge : edges) {
-            gravarArquivo.printf("      <edge source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
+            if (edge.getRotulo() != null) {
+                gravarArquivo.printf("      <edge id='" + edge.getId() + " source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
+                 gravarArquivo.printf("          <data key= 'd1'>" + edge.getRotulo()+ "</data>\n");
+            }else{
+                 gravarArquivo.printf("      <edge id='" + edge.getId() + " source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
+            }
+           
         }
 
         gravarArquivo.printf("  </graph>\n");
@@ -79,13 +92,13 @@ public abstract class Xml {
             int tamanhoListaEdge = listaEdge.getLength();
 
             org.w3c.dom.Node noGraph = listaGraph.item(0);
-            
+
             if (noGraph.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                 Element elementoGraph = (Element) noGraph;
                 String id = elementoGraph.getAttribute("id");
                 String edgeDefault = elementoGraph.getAttribute("edgedefault");
-                
-                grafo = new Graph(id,edgeDefault);
+
+                grafo = new Graph(id, edgeDefault);
             }
 
             for (int i = 0; i < tamanhoListaNode; i++) {
@@ -99,7 +112,7 @@ public abstract class Xml {
                     grafo.setNodes(no);
                 }
             }
-            
+
             for (int i = 0; i < tamanhoListaEdge; i++) {
                 org.w3c.dom.Node noEdge = listaEdge.item(i);
 
@@ -107,7 +120,7 @@ public abstract class Xml {
                     Element elementoEdge = (Element) noEdge;
                     String source = elementoEdge.getAttribute("source");
                     String target = elementoEdge.getAttribute("target");
-                    
+
                     Edge aresta = new Edge(grafo.getNode(source), grafo.getNode(target));
                     grafo.setEdges(aresta);
                 }
