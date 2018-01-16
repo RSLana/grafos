@@ -8,13 +8,17 @@ package classes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import br.com.davesmartins.graphviewlib.ViewGraph;
+import br.com.davesmartins.graphviewlib.erro.EGraphViewExcpetion;
 
 /**
  *
  * @author rafael
  */
 public class Graph {
+
     private String id;
+    private String nome;
     private static int digito;
     private String directed;
     private HashMap<String, Node> nodes;
@@ -39,8 +43,27 @@ public class Graph {
         edges = new ArrayList<>();
     }
 
+    public Graph(String id, String directed, HashMap<String, Node> nodes, ArrayList<Edge> arestasAdicionadas) {
+        this.id = id;
+        this.directed = directed;
+        this.nodes = nodes;
+        this.edges = arestasAdicionadas;
+    }
+    
+    public Graph() {
+        
+    }
+
     public String getId() {
         return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getDirected() {
@@ -103,7 +126,7 @@ public class Graph {
         }
         return cont;
     }
-    
+
     /**
      *
      * @return grau da regularidade
@@ -147,7 +170,7 @@ public class Graph {
         }
         return cont;
     }
-    
+
     public boolean isMultigrafo() {
         for (Node n1 : nodes.values()) {
             for (Node n2 : nodes.values()) {
@@ -158,7 +181,7 @@ public class Graph {
         }
         return false;
     }
-    
+
     public boolean existeTarget(String destino) {
         for (Edge edge : edges) {
             if (edge.getTarget() == getNode(destino)) {
@@ -295,10 +318,9 @@ public class Graph {
         }
         return true;
     }
-    
+
     public void listaAdjacencias() {
         HashMap<Node, ArrayList<Node>> vertices = new HashMap<>();
-        Node teste = new Node();
 
         for (Node n1 : nodes.values()) {
             ArrayList<Node> nodesAdjacentes = new ArrayList<>();
@@ -309,19 +331,19 @@ public class Graph {
             }
             vertices.put(n1, nodesAdjacentes);
         }
-        
+
         Set<Node> keys = vertices.keySet();
-        
-        for (Node key : keys){  
-          System.out.print(key.getId()+" -> ");
+
+        for (Node key : keys) {
+            System.out.print(key.getId() + " -> ");
             for (int j = 0; j < vertices.get(key).size(); j++) {
-                
-                System.out.print(vertices.get(key).get(j).getId()+" ");
+
+                System.out.print(vertices.get(key).get(j).getId() + " ");
             }
             System.out.println();
         }
     }
-    
+
     public boolean verticeAdjacenteLista(String source, String target) {
         for (Edge edge : edges) {
             if ((edge.getSource() == getNode(source) && edge.getTarget() == getNode(target))) {
@@ -330,7 +352,7 @@ public class Graph {
         }
         return false;
     }
-    
+
     public void adicionaNode(Node node) {
         setNodes(node);
     }
@@ -375,17 +397,17 @@ public class Graph {
             cont2 = 0;
             cont1++;
         }
-        
+
         System.out.print("   ");
-        for (Node node: nodes.values()) {
-            System.out.print(node.getId()+" ");
+        for (Node node : nodes.values()) {
+            System.out.print(node.getId() + " ");
         }
         System.out.println();
         cont1 = 0;
-        for (Node node: nodes.values()) {
-            System.out.print(node.getId()+" ");
+        for (Node node : nodes.values()) {
+            System.out.print(node.getId() + " ");
             for (int j = 0; j < nodes.size(); j++) {
-                System.out.print(adjacencia[cont1][j]+"  ");
+                System.out.print(adjacencia[cont1][j] + "  ");
             }
             cont1++;
             System.out.print("\n");
@@ -417,15 +439,15 @@ public class Graph {
         }
 
         System.out.print("   ");
-        for (Edge edge: edges) {
-            System.out.print("a"+edge.getId()+" ");
+        for (Edge edge : edges) {
+            System.out.print("a" + edge.getId() + " ");
         }
         System.out.println();
         cont1 = 0;
-        for (Node node: nodes.values()) {
-            System.out.print(node.getId()+" ");
+        for (Node node : nodes.values()) {
+            System.out.print(node.getId() + " ");
             for (int j = 0; j < edges.size(); j++) {
-                System.out.print(incidencia[cont1][j]+"  ");
+                System.out.print(incidencia[cont1][j] + "  ");
             }
             cont1++;
             System.out.print("\n");
@@ -456,7 +478,6 @@ public class Graph {
         ArrayList<Node> grupoC = new ArrayList<>();
 
         for (Node n : nodes.values()) {
-
             if (!(grupoA.contains(n) || grupoB.contains(n) || grupoC.contains(n))) {
                 grupoA.add(n);
                 for (int j = 0; j < divisao.get(n).size(); j++) {
@@ -483,5 +504,92 @@ public class Graph {
         } else {
             System.out.println("Não é bipartido");
         }
+    }
+
+    public void exibirImagemGrafo() {
+        try {
+            ViewGraph.generateViewGraphByFrame(this.getNome() + ".xml");
+        } catch (EGraphViewExcpetion ex) {
+            System.out.println("-->" + ex.getMensagem());
+        }
+    }
+
+    public ArrayList<Edge> prim(String verticeInicial) {
+        verticeInicial = "n" + verticeInicial;
+
+        ArrayList<Edge> arestasArvoreGeradoraMinima = new ArrayList<>();
+        HashMap<String, Node> verticesOriginais = this.getNodes();
+        HashMap<String, Node> verticesArvoreGeradoraMinima = new HashMap<>();
+        verticesArvoreGeradoraMinima.put(verticeInicial, this.getNode(verticeInicial));
+        
+        ArrayList<Edge> adjacentes = new ArrayList<>();
+
+        while (verticesArvoreGeradoraMinima.size() < verticesOriginais.size()) {
+            Edge edgeMenorCaminho = null;
+            for (Node node : nodes.values()) {
+                if (this.verticeAdjacente(verticeInicial, node.getId()) > 0) {
+                    for (Edge edge : edges) {    
+                        if ((verticeInicial.equals(edge.getSource().getId()) && node.getId().equals(edge.getTarget().getId()))
+                                || (verticeInicial.equals(edge.getTarget().getId()) && node.getId().equals(edge.getSource().getId()))) {
+                            adjacentes.add(edge);
+                            if(adjacentes.size() == 1) {
+                                edgeMenorCaminho = adjacentes.get(0);
+                            } else {
+                                int valorMenor = edgeMenorCaminho.getValor();
+                                int valorAtual = edge.getValor();
+                                if(valorMenor > valorAtual) {
+                                    edgeMenorCaminho = edge;
+                                }
+                            }
+                        }
+                    }    
+                } 
+            }
+            
+            if(verticeInicial.equals(edgeMenorCaminho.getSource().getId())) {
+                verticeInicial = edgeMenorCaminho.getTarget().getId();
+            } else {
+                verticeInicial = edgeMenorCaminho.getSource().getId();
+            }
+            System.out.println(verticeInicial);
+            arestasArvoreGeradoraMinima.add(edgeMenorCaminho);
+        }
+
+        return arestasArvoreGeradoraMinima;
+    }
+    
+    public boolean isAdjacente(Node no1, Node no2) {
+        for (int i = 0; i < this.edges.size(); i++) {
+//            if (this.getDirected().equals("directed")) {;
+//                if (this.edges.get(i).getSource().getId().equals(no1.getId()) && this.edges.get(i).getTarget().getId().equals(no2.getId())) {
+//                    return true;
+//                }
+//            } else {
+                if (this.edges.get(i).getSource().getId().equals(no1.getId()) && this.edges.get(i).getTarget().getId().equals(no2.getId())
+                        || this.edges.get(i).getSource().getId().equals(no2.getId()) && this.edges.get(i).getTarget().getId().equals(no1.getId())) {
+                    return true;
+                }
+//            }
+        }
+        return false;
+    }
+    
+    public int getNodeIndice(String id) {
+        for (int i = 0; i < this.nodes.size(); i++) {
+            if (id.equals(this.nodes.get("n"+i).getId())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public ArrayList<Node> getNodeAdjacentes(Node no1) {
+        ArrayList<Node> adjacentes = new ArrayList<>();
+        for (int i = 0; i < this.getNodes().size(); i++) {
+            if (this.isAdjacente(no1, this.getNodes().get("n"+i))) {
+                adjacentes.add(this.getNodes().get("n"+i));
+            }
+        }
+        return adjacentes;
     }
 }

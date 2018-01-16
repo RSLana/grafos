@@ -18,12 +18,17 @@ public class Node {
         this.id = "n"+(digito++);
     }
 
-    public static void setDigito(int digito) {
-        Node.digito = digito;
+     public Node(String idNode) {
+        this.id = idNode;
+    }
+     
+     public Node(String idNode, String rotulo) {
+        this.id = idNode;
+        this.rotulo = rotulo;
     }
     
-    public Node(String idNode) {
-        this.id = idNode;
+    public static void setDigito(int digito) {
+        Node.digito = digito;
     }
 
     public String getRotulo() {

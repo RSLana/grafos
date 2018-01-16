@@ -14,20 +14,34 @@ public class Edge {
     private static int digito = 0;
     private Node source = null;
     private Node target = null;
-    private String rotulo = null;
-
-    public String getRotulo() {
-        return rotulo;
-    }
-
-    public void setRotulo(String rotulo) {
-        this.rotulo = rotulo;
-    }
+    private int valor = 0;
 
     public Edge(Node source, Node target) {
         this.source = source;
         this.target = target;
         this.id = digito++;
+        this.valor = Integer.MAX_VALUE;
+    }
+    
+    public Edge(int id, Node source, Node target) {
+        this.source = source;
+        this.target = target;
+        this.id = id;
+        this.valor = Integer.MAX_VALUE;
+    }
+    
+    public Edge(Node source, Node target, int valor) {
+        this.source = source;
+        this.target = target;
+        this.valor = valor;
+        this.id = digito++;
+    }
+    
+    public Edge(int id, Node source, Node target, int valor) {
+        this.source = source;
+        this.target = target;
+        this.valor = valor;
+        this.id = id;
     }
 
     public int getId() {
@@ -54,4 +68,13 @@ public class Edge {
     public void setTarget(Node target) {
         this.target = target;
     }
+    
+    public int getValor() {
+        return valor;
+    }
+
+    public void setValor(int valor) {
+        this.valor = valor;
+    }
+    
 }

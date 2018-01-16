@@ -45,7 +45,7 @@ public abstract class Xml {
         for (String chave : chaves) {
             if (grafo.getNodes().get(chave).getRotulo() != null) {
                 gravarArquivo.printf("      <node id='" + grafo.getNodes().get(chave).getId() + "'>\n");
-                gravarArquivo.printf("          <data key= 'd0'>" + grafo.getNodes().get(chave).getRotulo() + "</data>\n");
+                gravarArquivo.printf("          <data key='d0'>" + grafo.getNodes().get(chave).getRotulo() + "</data>\n");
                 gravarArquivo.printf("      </node>\n");
             } else {
                 gravarArquivo.printf("      <node id='" + grafo.getNodes().get(chave).getId() + "'/>\n");
@@ -55,13 +55,14 @@ public abstract class Xml {
 
         ArrayList<Edge> edges = grafo.getEdges();
         for (Edge edge : edges) {
-            if (edge.getRotulo() != null) {
-                gravarArquivo.printf("      <edge id='" + edge.getId() + " source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
-                 gravarArquivo.printf("          <data key= 'd1'>" + edge.getRotulo()+ "</data>\n");
-            }else{
-                 gravarArquivo.printf("      <edge id='" + edge.getId() + " source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
+            if (edge.getValor() != Integer.MAX_VALUE) {
+                gravarArquivo.printf("      <edge id='" + edge.getId() + "' source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'>\n");
+                gravarArquivo.printf("          <data key='d1'>" + edge.getValor() + "</data>\n");
+                gravarArquivo.printf("      </edge>\n");
+            } else {
+                gravarArquivo.printf("      <edge id='" + edge.getId() + "' source='" + edge.getSource().getId() + "' target='" + edge.getTarget().getId() + "'/>\n");
             }
-           
+
         }
 
         gravarArquivo.printf("  </graph>\n");
@@ -87,9 +88,11 @@ public abstract class Xml {
             NodeList listaGraph = doc.getElementsByTagName("graph");
             NodeList listaNode = doc.getElementsByTagName("node");
             NodeList listaEdge = doc.getElementsByTagName("edge");
+            NodeList listaData = doc.getElementsByTagName("data");
 
             int tamanhoListaNode = listaNode.getLength();
             int tamanhoListaEdge = listaEdge.getLength();
+            int tamanhoListaData = listaData.getLength();
 
             org.w3c.dom.Node noGraph = listaGraph.item(0);
 
@@ -101,30 +104,60 @@ public abstract class Xml {
                 grafo = new Graph(id, edgeDefault);
             }
 
+            ArrayList<org.w3c.dom.Node> listaDataEdge = new ArrayList<>();
+            ArrayList<org.w3c.dom.Node> listaDataNode = new ArrayList<>();
+            for (int i = 0; i < tamanhoListaData; i++) {
+                org.w3c.dom.Node dataNode = listaData.item(i);
+                if (dataNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element elemento = (Element) dataNode;
+                    if (elemento.getAttribute("key").equals("d0")) {
+                        listaDataNode.add(dataNode);
+                    } else if (elemento.getAttribute("key").equals("d1")) {
+                        listaDataEdge.add(dataNode);
+                    }
+                }
+            }
+
             for (int i = 0; i < tamanhoListaNode; i++) {
                 org.w3c.dom.Node noNode = listaNode.item(i);
+                Node no = null;
 
                 if (noNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                     Element elementoNode = (Element) noNode;
                     String id = elementoNode.getAttribute("id");
 
-                    Node no = new Node(id);
+                    if (!listaDataNode.isEmpty()) {
+                        String rotulo = listaDataNode.get(i).getTextContent();
+                        no = new Node(id, rotulo);
+                    } else {
+                        no = new Node(id);
+                    }
                     grafo.setNodes(no);
+                    System.out.println("Valor nó: " + no.getRotulo());
                 }
             }
 
             for (int i = 0; i < tamanhoListaEdge; i++) {
                 org.w3c.dom.Node noEdge = listaEdge.item(i);
+                Edge aresta = null;
 
                 if (noEdge.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                     Element elementoEdge = (Element) noEdge;
+                    int id = Integer.parseInt(elementoEdge.getAttribute("id"));
                     String source = elementoEdge.getAttribute("source");
                     String target = elementoEdge.getAttribute("target");
 
-                    Edge aresta = new Edge(grafo.getNode(source), grafo.getNode(target));
+                    if (!listaDataEdge.isEmpty()) {
+                        int valor = Integer.parseInt(listaDataEdge.get(i).getTextContent());
+                        aresta = new Edge(id, grafo.getNode(source), grafo.getNode(target), valor);
+                    } else {
+                        aresta = new Edge(id, grafo.getNode(source), grafo.getNode(target));
+                    }
                     grafo.setEdges(aresta);
+                    System.out.println("Valor aresta: " + aresta.getValor());
                 }
             }
+
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
